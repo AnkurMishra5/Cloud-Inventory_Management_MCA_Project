@@ -1,5 +1,5 @@
 ---
-# Installs kubeadm, kubelet, kubectl and Docker on all nodes
+# Installs kubeadm, kubelet, kubectl and containerd on all nodes
 - name: Bootstrap all k8s nodes
   hosts: all
   become: true
@@ -12,7 +12,7 @@
     - name: Remove swap from fstab permanently
       ansible.builtin.replace:
         path: /etc/fstab
-        regexp: '^([^#].*\sswap\s.*)$'
+        regexp: '^([^#].*\sswap\s.*)'
         replace: '# \1'
 
     - name: Load required kernel modules

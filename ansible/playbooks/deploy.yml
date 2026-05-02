@@ -8,7 +8,8 @@
     helm_release: cloud-inventory-management
     helm_namespace: cloud-inventory-management
     docker_image: "{{ dockerhub_username }}/cloud-inventory-management"
-    image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest') }}"
+    image_tag: "{{ image_tag | default('latest') }}"
+    helm_chart_dest: /home/ubuntu/helm/cloud-inventory-management
 
   tasks:
     - name: Install Helm if not present
@@ -18,6 +19,18 @@
         creates: /usr/local/bin/helm
       become: true
 
+    - name: Ensure Helm chart directory exists on master
+      ansible.builtin.file:
+        path: /home/ubuntu/helm
+        state: directory
+        mode: "0755"
+
+    - name: Copy Helm chart to master node
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../helm/storlogix/"
+        dest: "{{ helm_chart_dest }}"
+        mode: "0644"
+
     - name: Create namespace
       ansible.builtin.command: >
         kubectl create namespace {{ helm_namespace }} --dry-run=client -o yaml | kubectl apply -f -
@@ -25,7 +38,7 @@
 
     - name: Deploy via Helm
       ansible.builtin.command: >
-        helm upgrade --install {{ helm_release }} /home/ubuntu/helm/cloud-inventory-management
+        helm upgrade --install {{ helm_release }} {{ helm_chart_dest }}
         --namespace {{ helm_namespace }}
         --set image.repository={{ docker_image }}
         --set image.tag={{ image_tag }}
