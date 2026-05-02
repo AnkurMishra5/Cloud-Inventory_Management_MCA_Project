@@ -286,7 +286,7 @@ export default function ReportGenerationPage() {
                       <Input
                         id="recipients"
                         placeholder="Enter email addresses (comma separated)"
-                        defaultValue="admin@storlogix.com"
+                        defaultValue="admin@cloudims.com"
                       />
                     </div>
 

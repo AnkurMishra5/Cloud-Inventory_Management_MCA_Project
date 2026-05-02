@@ -5,8 +5,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Storlogix",
-  description: "Inventory and Order Management System",
+  title: "Cloud Inventory Management",
+  description: "Cloud Inventory Management System — MCA Project",
 }
 
 export default function RootLayout({

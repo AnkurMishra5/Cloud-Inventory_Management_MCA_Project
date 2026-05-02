@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  DOCKERHUB_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/automate
+  DOCKERHUB_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/cloud-inventory-management
 
 jobs:
   # ── Build & Lint ─────────────────────────────────────────────────────────────

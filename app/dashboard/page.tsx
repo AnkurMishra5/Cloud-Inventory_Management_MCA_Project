@@ -395,27 +395,27 @@ export default function DashboardPage() {
                 {[
                   {
                     id: 1,
-                    name: "Storlogix Admin v1",
+                    name: "Cloud IMS Admin v1",
                     start: "01/01/2017",
                     due: "26/04/2017",
                     status: "Released",
-                    assign: "storlogix",
+                    assign: "cloud-ims",
                   },
                   {
                     id: 2,
-                    name: "Storlogix Frontend v1",
+                    name: "Cloud IMS Frontend v1",
                     start: "01/01/2017",
                     due: "26/04/2017",
                     status: "Released",
-                    assign: "Storlogix admin",
+                    assign: "Cloud IMS admin",
                   },
                   {
                     id: 3,
-                    name: "Storlogix Admin v1.1",
+                    name: "Cloud IMS Admin v1.1",
                     start: "01/05/2017",
                     due: "10/05/2017",
                     status: "Pending",
-                    assign: "storlogix",
+                    assign: "cloud-ims",
                   },
                 ].map((project) => (
                   <TableRow key={project.id}>
@@ -449,7 +449,7 @@ export default function DashboardPage() {
                 <AvatarFallback>R</AvatarFallback>
               </Avatar>
               <h3 className="text-lg font-medium">Ratan</h3>
-              <p className="text-sm text-muted-foreground">user@storlogix.com</p>
+              <p className="text-sm text-muted-foreground">user@cloudims.com</p>
               <Badge className="mt-2 bg-yellow-500 text-white">Admin</Badge>
             </div>
           </CardContent>
@@ -463,7 +463,7 @@ export default function DashboardPage() {
                 <AvatarFallback>NK</AvatarFallback>
               </Avatar>
               <h3 className="text-lg font-medium">Naval Khan</h3>
-              <p className="text-sm text-muted-foreground">user@storlogix.com</p>
+              <p className="text-sm text-muted-foreground">user@cloudims.com</p>
               <Badge className="mt-2 bg-gray-500 text-white">Support Lead</Badge>
             </div>
           </CardContent>
@@ -477,7 +477,7 @@ export default function DashboardPage() {
                 <AvatarFallback>VS</AvatarFallback>
               </Avatar>
               <h3 className="text-lg font-medium">Veena Shah</h3>
-              <p className="text-sm text-muted-foreground">user@storlogix.com</p>
+              <p className="text-sm text-muted-foreground">user@cloudims.com</p>
               <Badge className="mt-2 bg-green-500 text-white">Designer</Badge>
             </div>
           </CardContent>
@@ -491,7 +491,7 @@ export default function DashboardPage() {
                 <AvatarFallback>VK</AvatarFallback>
               </Avatar>
               <h3 className="text-lg font-medium">Vaani Kola</h3>
-              <p className="text-sm text-muted-foreground">user@storlogix.com</p>
+              <p className="text-sm text-muted-foreground">user@cloudims.com</p>
               <Badge className="mt-2 bg-blue-500 text-white">Developer</Badge>
             </div>
           </CardContent>

@@ -24,8 +24,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">Storlogix</h1>
-        <p className="text-gray-500 mt-2">Responsive Admin Dashboard</p>
+        <h1 className="text-4xl font-bold text-gray-800">Cloud Inventory Management</h1>
+        <p className="text-gray-500 mt-2">Cloud Inventory Management System — MCA Project</p>
       </div>
 
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
@@ -39,7 +39,7 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="admin@storlogix.com"
+              placeholder="admin@cloudims.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

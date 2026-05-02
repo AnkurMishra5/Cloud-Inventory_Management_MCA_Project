@@ -111,7 +111,7 @@ resource "aws_security_group" "k8s" {
 }
 
 # ── EC2 Key Pair ──────────────────────────────────────────────────────────────
-resource "aws_key_pair" "storlogix" {
+resource "aws_key_pair" "cloud_inventory" {
   key_name   = "${var.project}-key"
   public_key = file(var.public_key_path)
 }
@@ -122,7 +122,7 @@ resource "aws_instance" "master" {
   instance_type          = "t3.medium"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.k8s.id]
-  key_name               = aws_key_pair.storlogix.key_name
+  key_name               = aws_key_pair.cloud_inventory.key_name
 
   root_block_device {
     volume_size = 20
@@ -139,7 +139,7 @@ resource "aws_instance" "worker" {
   instance_type          = "t3.small"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.k8s.id]
-  key_name               = aws_key_pair.storlogix.key_name
+  key_name               = aws_key_pair.cloud_inventory.key_name
 
   root_block_device {
     volume_size = 15

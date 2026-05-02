@@ -73,7 +73,7 @@ automate/
 │   ├── buyers/                 # Buyer management
 │   └── reports/                # Analytics & charts
 ├── components/                 # Reusable React components
-├── helm/storlogix/             # Helm chart for K8s deployment
+├── helm/storlogix/             # Helm chart for K8s deployment (chart: cloud-inventory-management)
 │   ├── templates/              # K8s manifests (Deployment, Service, Ingress, HPA)
 │   ├── values.yaml             # Default values
 │   └── values-prod.yaml        # Production overrides

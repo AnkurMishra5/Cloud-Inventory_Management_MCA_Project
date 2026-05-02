@@ -1,6 +1,6 @@
 apiVersion: v2
-name: automate
-description: Automate - Cloud Inventory Management Helm chart
+name: cloud-inventory-management
+description: Cloud Inventory Management System — MCA Project Helm chart
 type: application
 version: 0.1.0
 appVersion: "1.0.0"

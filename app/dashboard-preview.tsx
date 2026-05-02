@@ -31,7 +31,7 @@ export default function DashboardPreview() {
         <div className="flex items-center h-16 px-4 border-b">
           {sidebarExpanded ? (
             <div className="flex items-center">
-              <h1 className="text-xl font-bold text-blue-500">Storlogix</h1>
+              <h1 className="text-xl font-bold text-blue-500">cloud-ims</h1>
             </div>
           ) : (
             <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
@@ -291,7 +291,7 @@ export default function DashboardPreview() {
                         .join("")}
                     </div>
                     <h3 className="text-lg font-medium">{name}</h3>
-                    <p className="text-sm text-gray-500">user@storlogix.com</p>
+                    <p className="text-sm text-gray-500">user@cloud-ims.com</p>
                     <span
                       className={`mt-2 px-2 py-1 text-xs font-semibold rounded-full text-white ${
                         i === 0 ? "bg-yellow-500" : i === 1 ? "bg-gray-500" : i === 2 ? "bg-green-500" : "bg-blue-500"
@@ -367,27 +367,27 @@ export default function DashboardPreview() {
                       {[
                         {
                           id: 1,
-                          name: "Storlogix Admin v1",
+                          name: "cloud-ims Admin v1",
                           start: "01/01/2017",
                           due: "26/04/2017",
                           status: "Released",
-                          assign: "storlogix",
+                          assign: "cloud-ims",
                         },
                         {
                           id: 2,
-                          name: "Storlogix Frontend v1",
+                          name: "cloud-ims Frontend v1",
                           start: "01/01/2017",
                           due: "26/04/2017",
                           status: "Released",
-                          assign: "Storlogix admin",
+                          assign: "cloud-ims admin",
                         },
                         {
                           id: 3,
-                          name: "Storlogix Admin v1.1",
+                          name: "cloud-ims Admin v1.1",
                           start: "01/05/2017",
                           due: "10/05/2017",
                           status: "Pending",
-                          assign: "storlogix",
+                          assign: "cloud-ims",
                         },
                       ].map((project) => (
                         <tr key={project.id}>
@@ -433,7 +433,7 @@ export default function DashboardPreview() {
         </main>
 
         <footer className="border-t py-4 px-6 flex justify-between items-center text-sm text-gray-500">
-          <div>2025 © Storlogix</div>
+          <div>2025 © cloud-ims</div>
           <div className="flex gap-4">
             <a href="#" className="hover:text-blue-500">
               About Us

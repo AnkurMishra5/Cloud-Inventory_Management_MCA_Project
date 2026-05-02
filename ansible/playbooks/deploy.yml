@@ -1,13 +1,13 @@
 ---
-# Deploy Automate app via Helm on the master node
-- name: Deploy Automate
+# Deploy Cloud Inventory Management app via Helm on the master node
+- name: Deploy Cloud Inventory Management
   hosts: master
   become: false
 
   vars:
-    helm_release: automate
-    helm_namespace: automate
-    docker_image: "{{ dockerhub_username }}/automate"
+    helm_release: cloud-inventory-management
+    helm_namespace: cloud-inventory-management
+    docker_image: "{{ dockerhub_username }}/cloud-inventory-management"
     image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest') }}"
 
   tasks:
@@ -25,7 +25,7 @@
 
     - name: Deploy via Helm
       ansible.builtin.command: >
-        helm upgrade --install {{ helm_release }} /home/ubuntu/helm/automate
+        helm upgrade --install {{ helm_release }} /home/ubuntu/helm/cloud-inventory-management
         --namespace {{ helm_namespace }}
         --set image.repository={{ docker_image }}
         --set image.tag={{ image_tag }}

@@ -163,11 +163,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex items-center h-16 px-4 border-b">
           {sidebarExpanded ? (
             <Link href="/dashboard" className="flex items-center">
-              <h1 className="text-xl font-bold text-blue-500">Storlogix</h1>
+              <h1 className="text-xl font-bold text-blue-500">Cloud IMS</h1>
             </Link>
           ) : (
             <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-              S
+              C
             </div>
           )}
         </div>
@@ -222,7 +222,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <SheetContent side="left" className="p-0 w-64">
           <div className="flex items-center h-16 px-4 border-b">
             <Link href="/dashboard" className="flex items-center">
-              <h1 className="text-xl font-bold text-blue-500">Storlogix</h1>
+              <h1 className="text-xl font-bold text-blue-500">Cloud IMS</h1>
             </Link>
           </div>
 
@@ -299,7 +299,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex-1 overflow-auto p-4">{children}</main>
 
         <footer className="border-t py-4 px-6 flex justify-between items-center text-sm text-gray-500">
-          <div>2025 © Storlogix</div>
+          <div>2025 © Cloud Inventory Management System</div>
           <div className="flex gap-4">
             <a href="#" className="hover:text-blue-500">
               About Us

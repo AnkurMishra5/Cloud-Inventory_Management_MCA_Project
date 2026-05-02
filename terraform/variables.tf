@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "project" {
   description = "Project name for resource tagging"
   type        = string
-  default     = "automate"
+  default     = "cloud-inventory-mgmt"
 }
 
 variable "ami_id" {

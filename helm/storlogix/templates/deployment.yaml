@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "storlogix.fullname" . }}
+  name: {{ include "cloud-inventory-management.fullname" . }}
   labels:
-    {{- include "storlogix.labels" . | nindent 4 }}
+    {{- include "cloud-inventory-management.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "storlogix.selectorLabels" . | nindent 6 }}
+      {{- include "cloud-inventory-management.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "storlogix.selectorLabels" . | nindent 8 }}
+        {{- include "cloud-inventory-management.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
