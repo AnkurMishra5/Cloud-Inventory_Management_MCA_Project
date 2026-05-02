@@ -1,0 +1,15 @@
+---
+# Join worker nodes to the cluster
+- name: Join workers to cluster
+  hosts: workers
+  become: true
+
+  tasks:
+    - name: Read join command
+      ansible.builtin.set_fact:
+        join_cmd: "{{ lookup('file', '/tmp/k8s_join_command') }}"
+
+    - name: Join worker to cluster
+      ansible.builtin.command: "{{ join_cmd }}"
+      args:
+        creates: /etc/kubernetes/kubelet.conf

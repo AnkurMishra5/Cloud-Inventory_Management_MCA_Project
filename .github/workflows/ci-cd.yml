@@ -1,0 +1,92 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DOCKERHUB_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/storlogix
+
+jobs:
+  # ── Build & Lint ─────────────────────────────────────────────────────────────
+  build:
+    name: Build & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  # ── Docker Build & Push to Docker Hub ────────────────────────────────────────
+  push:
+    name: Push Docker Image
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+
+    outputs:
+      image_tag: ${{ steps.tag.outputs.image_tag }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set image tag
+        id: tag
+        run: echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_IMAGE }}:${{ github.sha }}
+            ${{ env.DOCKERHUB_IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── Deploy to kubeadm cluster via Ansible ────────────────────────────────────
+  deploy:
+    name: Deploy to Cluster
+    runs-on: ubuntu-latest
+    needs: push
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Update inventory with master IP
+        run: |
+          sed -i "s/MASTER_IP/${{ secrets.MASTER_IP }}/g" ansible/inventory/hosts.ini
+          sed -i "s/WORKER_IP/${{ secrets.WORKER_IP }}/g" ansible/inventory/hosts.ini
+
+      - name: Deploy via Ansible
+        run: |
+          ansible-playbook ansible/playbooks/deploy.yml \
+            -i ansible/inventory/hosts.ini \
+            -e "image_tag=${{ needs.push.outputs.image_tag }}" \
+            -e "dockerhub_username=${{ secrets.DOCKERHUB_USERNAME }}"

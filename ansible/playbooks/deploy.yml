@@ -1,0 +1,33 @@
+---
+# Deploy Storlogix via Helm on the master node
+- name: Deploy Storlogix
+  hosts: master
+  become: false
+
+  vars:
+    helm_release: storlogix
+    helm_namespace: storlogix
+    docker_image: "{{ dockerhub_username }}/storlogix"
+    image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest') }}"
+
+  tasks:
+    - name: Install Helm if not present
+      ansible.builtin.shell: |
+        curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      args:
+        creates: /usr/local/bin/helm
+      become: true
+
+    - name: Create namespace
+      ansible.builtin.command: >
+        kubectl create namespace {{ helm_namespace }} --dry-run=client -o yaml | kubectl apply -f -
+      changed_when: false
+
+    - name: Deploy via Helm
+      ansible.builtin.command: >
+        helm upgrade --install {{ helm_release }} /home/ubuntu/helm/storlogix
+        --namespace {{ helm_namespace }}
+        --set image.repository={{ docker_image }}
+        --set image.tag={{ image_tag }}
+        --wait --timeout 5m
+      changed_when: true

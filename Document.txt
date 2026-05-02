@@ -1,0 +1,481 @@
+What you're building:
+
+Storlogix-style shell (sidebar, dashboard, analytics) — already 60% done
+Replace Inventory/Orders/Buyers sections with Workflow builder + Integrations
+Visual workflow canvas (like the Zapier zap editor — nodes, connections, branching paths)
+20-100 app integrations (Slack, Gmail, Sheets, Notion, HubSpot, etc.)
+Frontend only (UI/UX, no real API calls, mock data)
+
+Part	Time
+Adapt existing sidebar + dashboard	2-3 hours
+Integrations browser page (20-100 app cards)	3-4 hours
+Workflow list page (My Zaps equivalent)	2-3 hours
+Visual workflow canvas (drag, connect, branch)	2-3 days
+Step config panels (trigger/action forms)	1-2 days
+Total	~4-6 days
+The canvas is the hardest part. Building a node-based editor from scratch is complex — using a library like React Flow cuts that down significantly.
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Frontend
+
+Next.js 14 (App Router) + TypeScript
+React Flow — workflow canvas (nodes, edges, branching)
+Zustand — workflow builder state
+TanStack Query — server state, caching, background refetch
+TanStack Table — logs, run history, integration tables
+shadcn/ui + Tailwind CSS — UI components
+Framer Motion — canvas animations, transitions
+Zod — schema validation on forms
+Backend (API Layer)
+
+Node.js + Fastify — faster than Express, built-in schema validation, better for high throughput
+tRPC — end-to-end typesafe API between Next.js frontend and Node backend (no REST boilerplate)
+Zod — shared validation schemas between frontend and backend
+Prisma — ORM with full TypeScript support
+JWT + refresh tokens — auth (access token short-lived, refresh in httpOnly cookie)
+Workflow Execution Engine
+
+This is the core of the product:
+
+BullMQ — job queue built on Redis, handles scheduling, retries, delays, concurrency
+Redis — powers BullMQ + caching + rate limiting per integration
+Temporal.io — for complex long-running workflows with branching, retries, timeouts (this is what serious automation platforms use in production)
+Worker processes — isolated Node.js workers that execute each step, one worker pool per integration category
+Database
+
+PostgreSQL (primary) — workflows, users, runs, integration configs, audit logs
+Redis — queue, cache, rate limiting, session store
+ClickHouse — analytics and run history at scale (fast columnar queries, what most analytics-heavy SaaS use)
+S3-compatible storage (AWS S3 or Cloudflare R2) — store execution payloads, logs, large data blobs
+Auth
+
+NextAuth.js v5 (Auth.js) — handles sessions, OAuth login
+OAuth 2.0 per integration — each connected app (Slack, Google, etc.) stores encrypted tokens
+AES-256 encryption — for storing OAuth tokens in DB (never plaintext)
+RBAC — role-based access (admin, member, viewer) from day one
+Integrations Layer
+
+Each integration is a self-contained module: trigger handlers + action handlers
+Webhook receiver — dedicated endpoint that maps incoming webhooks to workflow triggers
+Polling engine — for apps that don't support webhooks (runs on BullMQ cron jobs)
+OAuth manager service — handles token refresh, expiry, re-auth flows
+Infrastructure
+
+Docker — containerize every service
+Kubernetes (K8s) — orchestrate frontend, API, workers, Redis, Postgres
+Helm charts — K8s package management
+Terraform — Infrastructure as Code for cloud provisioning
+AWS or GCP — cloud provider
+EKS (Kubernetes) or GKE
+RDS (PostgreSQL managed)
+ElastiCache (Redis managed)
+S3 (blob storage)
+CloudFront (CDN)
+CI/CD
+
+GitHub Actions — build, test, push Docker images
+ArgoCD — GitOps-based K8s deployment (declarative, auto-sync)
+Docker Hub or AWS ECR — container registry
+Semantic versioning + automated changelogs
+Observability (non-negotiable in production)
+
+OpenTelemetry — distributed tracing across all services
+Grafana — dashboards
+Prometheus — metrics collection
+Loki — log aggregation
+Sentry — error tracking (frontend + backend)
+Uptime Kuma or Better Uptime — status page + alerting
+Security
+
+Cloudflare — DDoS protection, WAF, DNS
+Vault (HashiCorp) — secrets management
+Rate limiting — per user, per integration, per workflow run
+Audit logs — every action logged with user + timestamp
+SOC2-ready patterns from day one (important if you go B2B)
+The architecture in one line:
+
+Next.js → tRPC → Fastify API → BullMQ/Temporal → Worker Pool → Integration Handlers → PostgreSQL + Redis + S3
+What makes this production-ready vs a toy:
+
+The difference is Temporal.io for the execution engine. BullMQ handles simple queues but Temporal handles durable execution — if a workflow is mid-run and your server crashes, Temporal replays it from exactly where it stopped. That's what separates real automation platforms from side projects.
+
+Want me to now draw out the full system architecture diagram in code (as a spec), or jump straight into scaffolding the project structure?
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+Notify says — only interrupt me like a phone call when it actually matters.
+
+What you're actually building
+You're building a unified intelligent notification hub — one app that monitors all your communication channels (Gmail, Slack, Teams, Outlook, WhatsApp, LinkedIn, Instagram, Twitter, Discord, YouTube, trading apps) and delivers the important ones as call-style interruptions on your phone, with AI-powered reply drafting built in.
+
+The core insight: most apps notify you equally for everything. You miss the critical stuff in the noise. Notify says — only interrupt me like a phone call when it actually matters.
+
+Is it a good product? Honest take.
+Yes, genuinely. Here's why it's real:
+
+The problem is universal and painful. Every professional drowns in notifications across 6-10 apps. There's no product today that does what you're describing — cross-platform call-style alerting with AI drafting in one place. That gap is real.
+
+The AI drafting angle is smart timing. With LLMs now commoditized, the value isn't the AI itself — it's the context. You already have the message, the platform, the sender. That's the perfect setup for one-tap "reply with AI" that actually sounds like you.
+
+The call-style alert is the killer differentiator. Nobody has done this properly. Notifee + FCM full-screen intent on Android is the right technical approach and you've already built it.
+
+Can it be a unicorn?
+Potentially, but not in its current form and not with the current strategy. Here's the honest breakdown:
+
+The individual user market is crowded and hard to monetize. People don't pay for notification apps. The real money is enterprise.
+
+For enterprise, the product needs to be fundamentally different from what you have now. Companies don't buy "better notifications" — they buy workflow automation, compliance, team escalation, and SLA management. Think: "if a P1 Slack alert goes unacknowledged for 5 minutes, escalate to the manager's phone as a call." That's PagerDuty territory, and PagerDuty is a $3B company doing exactly that for engineering teams. You could do it for every team.
+
+The Zapier web app idea is interesting but it's a distraction right now. Zapier took 10 years and $1.4B in funding to get where they are. The automation workflow builder is genuinely hard — not the UI, but the reliability, error handling, retry logic, and the 1000+ edge cases per integration. You'd be competing with Zapier, Make, n8n, and Workato simultaneously.
+
+What's actually left to build for enterprise readiness
+Here's the honest gap analysis between what you have and what an enterprise would pay for:
+
+What you have (solid foundation):
+
+OAuth integrations: Gmail, Slack, Teams, Outlook, LinkedIn, Instagram, Twitter, WhatsApp
+FCM push + Notifee full-screen alerts on Android
+Gemini AI for drafting/rephrasing
+Redis caching + BullMQ queues (real infrastructure, not toy)
+Firestore + Neon PostgreSQL dual storage
+WebSocket real-time updates
+React Native mobile app with decent UI
+What's missing for enterprise (the real gaps):
+
+Alert Rules Engine — the core feature. Right now alerts fire for everything. You need IF/THEN rules: "only alert me from this sender", "only if subject contains urgent", "only between 9am-6pm". Without this, the product is just another notification app.
+
+Team escalation — if I don't acknowledge in X minutes, alert my manager. This is what PagerDuty charges $40/user/month for.
+
+Audit logs and compliance — enterprises need to know who saw what alert and when. GDPR/SOC2 matters.
+
+SSO / SAML — no enterprise IT department will approve an app without it.
+
+The call-style alert needs to actually work reliably — right now it's built but not battle-tested. Background kill, Doze mode, battery optimization on Android will break it on 30% of devices.
+
+Reply from alert — you can draft, but can you send directly from the alert screen? That's the "reply to a call" moment that makes the product magical.
+
+Web dashboard — enterprises want to manage alert rules, see team activity, configure integrations from a browser. The mobile-only approach limits enterprise adoption.
+
+My honest recommendation on strategy
+Bootstrap mindset is exactly right. Don't try to build everything. Here's the sequence I'd follow:
+
+Start with the mobile app as your wedge. Get 100 real users using it for personal productivity. The call-style alert + AI draft combo is genuinely novel — that's your demo moment. Record a 60-second video of a Slack message coming in as a full-screen call alert, you reply with one AI tap. That video will go viral in the right circles.
+
+Build the Alert Rules Engine next — it's the single highest-leverage feature. Without it you can't charge anyone anything. With it, you have a real product.
+
+Skip the Zapier clone for now. Seriously. It's a 2-year detour. Instead, add a simple "Workflow" feature that's just alert rules with actions — "when Gmail email from [VIP] arrives → call alert + auto-draft reply." That's 80% of the Zapier value for 5% of the build effort.
+
+Target a specific vertical first. Don't go broad. Pick one: sales teams (Slack + Gmail + LinkedIn alerts for deal signals), or DevOps (GitHub + PagerDuty + Slack for incident alerts), or finance (trading alerts + email). Nail one vertical, then expand.
+
+The web app makes sense eventually — but as a management dashboard for the mobile app, not as a standalone Zapier competitor. Build it when you have 500+ users asking "how do I manage my alert rules on desktop."
+
+The 12-18 month window before well-funded competition is real. The move is: ship the Alert Rules Engine, get 500 paying users at $10-15/month, use that traction to raise a small seed round, then build the web layer properly.
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+One real concern with your current setup: you're on Expo managed workflow with a custom native module. That's a tension point. The FullScreenAlertModule.kt means you're already in bare workflow territory. Make sure your expo prebuild is clean and you're not fighting Expo's managed layer for native features. If you keep adding native modules, consider fully committing to bare workflow — it gives you all of Expo's tooling without the managed constraints.
+
+My recommendation: Stay on React Native + Expo bare workflow. Add native modules only where the feature genuinely requires it (call-style alerts, background processing). Don't rewrite in native — that's 6-12 months of work that doesn't move your product forward.
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+1. Alert Rules Engine (build this first, nothing else matters without it) Simple IF/THEN: sender filter, keyword filter, time window, platform filter. This is what turns "another notification app" into a product people pay for.
+
+2. Reply from Alert Screen The full loop: receive call-style alert → read message → tap "AI Draft" → edit → send. Right now you can draft but not send. Closing this loop is the "holy shit" moment for any demo.
+
+3. Switch AI to GPT-4o mini with style learning Store user writing samples per platform. Feed as few-shot context. The draft quality jump will be immediately noticeable.
+
+4. Web dashboard (management only) Not Zapier. Just: manage alert rules, see alert history, configure integrations, manage team members. Next.js, you already have the website folder. This is what enterprise buyers need to see.
+
+5. Team escalation Alert → unacknowledged for N minutes → escalate to manager. This is the PagerDuty feature that justifies $20-40/user/month pricing.
+
+6. SAML SSO Only when your first enterprise prospect asks. Not before.
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+The Core Problem You're Solving for Enterprises
+When a company connects their Gmail, Slack, or Teams to your product, you are sitting in the middle of their most sensitive communications. Legal discussions, financial data, HR conversations, M&A deals — all flowing through your system. Their IT and legal team's first question will always be: "Where does our data go and who can see it?"
+
+You need a real answer to that, not just a promise.
+
+Authentication: What You Actually Need
+For individuals and small teams right now: Firebase Auth + Google OIDC is fine. Keep it.
+
+For enterprises — the mandatory stack:
+
+SAML 2.0 is non-negotiable for any company running Okta, Azure AD, or Google Workspace with SSO enforced. When IT says "we only allow apps that support SSO," they mean SAML. No SAML = no deal, full stop.
+
+OIDC is the modern alternative to SAML. Okta, Azure AD, and Auth0 all support both. Some newer companies prefer OIDC. You should support both.
+
+The practical implementation path:
+
+Don't build SAML/OIDC from scratch. Use Auth0 or WorkOS.
+
+WorkOS is specifically built for exactly your use case — adding enterprise SSO to a SaaS product. It handles SAML, OIDC, Google Workspace SSO, Azure AD, Okta, and Directory Sync (so when a company removes an employee from their directory, that user loses access to your app automatically). Their pricing is free until you hit revenue, then per-connection. This is what Vercel, Loom, and Drata use.
+
+Auth0 is the alternative — more mature, more expensive, but more flexible.
+
+My recommendation: Use WorkOS. It's purpose-built for this exact problem and will save you 3-6 months of auth engineering.
+
+Data Isolation — The Architecture You Need
+Your instinct about separate databases per company is correct. This is called multi-tenancy with data isolation and there are three models:
+
+Shared database, shared schema — all companies' data in one table with a company_id column. Cheapest to run, but one SQL bug exposes everyone's data. Enterprises will reject this.
+
+Shared database, separate schemas — one Postgres instance, but each company gets their own schema/namespace. Better isolation, still cost-effective. Medium enterprises accept this.
+
+Separate database per tenant — each company gets their own database instance. Maximum isolation. This is what enterprises with strict compliance requirements (finance, healthcare, legal) demand. Most expensive to operate but the only answer for serious enterprise deals.
+
+For your stage, start with shared database + separate schemas in Neon PostgreSQL. Neon supports this natively. When you land a compliance-heavy customer, you provision them a dedicated database instance.
+
+The architecture looks like this:
+
+Notify Platform
+├── tenant_acme_corp (Neon schema)
+│   ├── messages
+│   ├── alerts  
+│   ├── audit_logs
+│   └── users
+├── tenant_startup_xyz (Neon schema)
+│   ├── messages
+│   ├── alerts
+│   └── ...
+└── tenant_enterprise_co (Dedicated Neon instance)
+    └── (completely separate DB, their own credentials)
+Every query in your backend must include the tenant context. No cross-tenant queries ever. This is enforced at the application layer, not just the database layer.
+
+Audit Logs — What Enterprises Actually Need
+This is not just "log who logged in." Enterprise audit logs need to answer:
+
+Who accessed what data and when
+Who connected which integration
+Which alerts were triggered and acknowledged
+Who changed alert rules
+When was data exported or deleted
+Any failed authentication attempts
+The schema you need:
+
+// Every sensitive action gets logged
+{
+  id: uuid,
+  tenantId: string,           // which company
+  userId: string,             // who did it
+  userEmail: string,          // human readable
+  action: string,             // 'alert.acknowledged', 'integration.connected', 'data.exported'
+  resourceType: string,       // 'alert', 'integration', 'user', 'rule'
+  resourceId: string,         // the specific record
+  ipAddress: string,
+  userAgent: string,
+  metadata: object,           // action-specific details
+  timestamp: ISO string,
+  outcome: 'success' | 'failure'
+}
+These logs must be:
+
+Immutable — nobody, including your own engineers, can delete or modify them
+Exportable — companies need to pull them for their own compliance audits
+Retained for minimum 1 year (some regulations require 7 years)
+Searchable — the company's admin needs to filter by user, date range, action type
+Store audit logs in a separate append-only collection in Firestore or a separate Neon table with no DELETE permissions granted to the application service account.
+
+The "We Don't Touch Your Data" Promise — How to Actually Back It Up
+Saying it is not enough. Here's what makes it credible:
+
+Encryption at rest and in transit All data encrypted in the database (Neon and Firestore both do this by default). All API calls over TLS 1.2+. Tokens stored encrypted, never in plaintext. You need to be able to show this in a security questionnaire.
+
+Zero-knowledge token storage When you store OAuth tokens (Gmail access token, Slack token), encrypt them with a key that only your backend holds, ideally using a key management service. AWS KMS, Google Cloud KMS, or HashiCorp Vault. This means even if someone gets your database, the tokens are useless without the encryption keys.
+
+Data processing agreements (DPA) Every enterprise will ask you to sign a DPA before they connect their data. This is a legal contract that defines exactly what you do with their data, how long you keep it, and what happens if there's a breach. You need a lawyer to draft this. It's not optional for enterprise sales.
+
+Penetration testing Before approaching enterprises, get a pentest done. Companies like Cobalt or Synack do this. It costs $5,000-15,000 but gives you a report you can show to enterprise security teams.
+
+Security Certifications — The Real Roadmap
+Here's the honest truth about certifications ranked by what enterprises actually ask for:
+
+SOC 2 Type II — this is the one. Almost every US enterprise will ask "are you SOC 2 compliant?" before signing. It's an audit by a certified CPA firm that verifies your security controls are real and have been operating for at least 6 months. Cost: $15,000-50,000 for the audit. Timeline: 6-12 months to prepare + audit. This is your primary target.
+
+ISO 27001 — more common in Europe and larger enterprises. Similar to SOC 2 but international standard. Do this after SOC 2 if you're targeting European companies.
+
+GDPR compliance — mandatory if any of your users are in the EU. Not a certification but a legal requirement. You need a privacy policy, data processing agreements, the ability to delete a user's data on request, and data residency options (EU data stays in EU). This is not optional.
+
+HIPAA — only if you're targeting healthcare companies. Significant additional requirements. Don't target healthcare until you're well-funded.
+
+The realistic timeline for a bootstrap startup:
+
+Right now to 6 months: implement the technical controls (encryption, audit logs, access controls, data isolation). These are prerequisites for any certification.
+
+6-12 months: pursue SOC 2 Type I first (snapshot audit, cheaper, faster), then Type II (6-month observation period).
+
+12-18 months: ISO 27001 if targeting European enterprises.
+
+Use Vanta or Drata to automate SOC 2 preparation. They connect to your AWS/GCP/Firebase and automatically collect evidence for auditors. Cuts preparation time from 6 months to 6 weeks. Costs around $1,000/month but saves enormous time.
+
+The Practical Sequence for Your Stage
+Don't try to do all of this at once. Here's the order:
+
+First, implement proper audit logging in your backend now — it costs almost nothing and you'll need it for everything else. Every alert, every integration connect/disconnect, every login gets logged.
+
+Second, implement tenant data isolation in your database schema. Do this before you onboard your first company. Retrofitting it later is painful.
+
+Third, get WorkOS integrated for SAML/OIDC. Do this when your first enterprise prospect asks. Not before — it's wasted effort until then.
+
+Fourth, get a DPA drafted by a lawyer. $500-1,000 with a startup-focused attorney. You need this before any enterprise signs.
+
+Fifth, start SOC 2 preparation when you have 3-5 paying enterprise customers. Use Vanta to automate it. The revenue from those customers funds the audit.
+
+The honest reality: a small org that's not in a regulated industry (not finance, not healthcare, not government) will often accept a well-written security policy and a signed DPA without requiring SOC 2. SOC 2 becomes mandatory when you're selling to mid-market and above. Start with the controls, get the certification when the deals require it.
+---------------------------------------------------------------------------------------------------------------------------------------------------
+WorkOS is the right call. Don't build SAML yourself — it's a security-critical protocol where one mistake means a complete authentication bypass. The engineers who've been doing this for years still find edge cases. You'd spend 2-3 months building something that WorkOS gives you for free until $1M ARR, and theirs is battle-tested against Okta, Azure AD, Google Workspace, and every enterprise IdP in the wild.
+
+The integration into your existing auth controller is clean. WorkOS handles the SAML handshake, gives you back a verified user profile, and you continue doing exactly what you already do — create/find the Firebase user, generate a custom token, redirect to the app. Your current Google OAuth flow stays completely untouched for individual users.
+
+The one thing I'd add to your thinking: WorkOS also gives you Directory Sync (SCIM) which is actually more important than SAML for enterprise deals. SCIM means when a company fires an employee and removes them from Okta, that person automatically loses access to your app within minutes. Without SCIM, a terminated employee could still have active sessions in your app. Enterprise IT teams ask about this specifically — it's a security requirement, not a nice-to-have.
+
+So my opinion: use WorkOS, get SAML + OIDC + SCIM in one integration, keep Firebase as your session layer underneath it. That's the cleanest path to enterprise-ready auth without the security risk of rolling your own.
+----------------------------------------------------------------------------------------------------------------------------------------------------
+The Root Pattern: Never Trust Initial State Blindly
+Production apps don't immediately act on the first auth state they receive. They wait for Firebase to confirm the session is fully restored from persistent storage before making any navigation decision.
+
+The key is onAuthStateChanged fires twice in certain scenarios — once with null while it's still reading from AsyncStorage, then again with the actual user once it's loaded. Amateur implementations navigate on the first fire. Production apps wait for the resolved state.
+
+What Production Apps Actually Do
+1. Loading gate with a minimum wait
+
+Apps like Notion, Linear, Slack mobile all show a splash/loading screen and don't attempt navigation until auth state is definitively known. Not just "not null" — but confirmed stable.
+
+App opens → Show splash → Wait for onAuthStateChanged to resolve → Navigate
+The critical part: they also set a minimum loading time (usually 500ms-1s) so even if Firebase resolves instantly, they don't navigate before the JS bridge and AsyncStorage are fully ready.
+
+2. Persisted auth state as the source of truth
+
+Firebase's setPersistence with AsyncStorage means the session survives app restarts. But the read from AsyncStorage is async. Production apps explicitly wait for that read to complete before rendering any navigation stack at all. The navigator literally doesn't mount until auth is resolved.
+
+3. Deep link handling is decoupled from auth state
+
+When a deep link comes in (like your notify-app://auth/callback?token=...), production apps process it in a queue — they don't immediately sign in and navigate. They sign in, wait for onAuthStateChanged to confirm the new user, then navigate. The navigation is driven by the auth state listener, not by the deep link handler directly.
+
+4. No navigation in the deep link handler
+
+This is the most common mistake. Your deep link handler calls signInWithCustomToken and then immediately calls navigation.reset(). Production apps let onAuthStateChanged handle the navigation. The deep link handler only does the sign-in. The navigator reacts to the state change automatically.
+
+Why This Specifically Fixes Your Issue
+Your current flow:
+
+Deep link → signInWithCustomToken → navigation.reset() to Main
+           ↓
+Metro fast refresh fires → onAuthStateChanged sees null → navigates to Login
+Production flow:
+
+Deep link → signInWithCustomToken → done, nothing else
+           ↓
+onAuthStateChanged fires with user → navigator reacts → goes to Main
+           ↓
+Metro fast refresh fires → onAuthStateChanged fires again → user still there → stays on Main
+The difference is that by the time fast refresh happens, the auth state is already confirmed and persisted. The navigator is driven purely by onAuthStateChanged, so fast refresh can't race against a manual navigation.reset() call.
+
+The Bottom Line
+Every production app with OAuth follows the same rule: auth state drives navigation, nothing else does. The deep link, the OAuth callback, the custom token exchange — none of them touch the navigator directly. They only update auth state. The navigator watches auth state and reacts. That's it.
+
+Your AppNavigator.tsx already has onAuthStateChanged — it's just that your login screen is also calling navigation.reset() which creates a race condition. Remove the manual navigation from the login flow, let the auth listener be the single source of truth, and the reload bug goes away in both dev and production.
+--------------------------------------------------------------------------------------------------------------------------------------------------
+SAML vs OAuth vs OIDC
+These aren't competing choices — they serve different purposes:
+
+OAuth 2.0 is what you already use. It's for authorization — "allow this app to access my Gmail/Slack." Keep using it for all your integrations. That's correct.
+
+OIDC (OpenID Connect) is OAuth 2.0 + identity layer on top. It's what Google Sign-In uses under the hood. It gives you the user's identity (who they are) not just access (what they can do). For your current Google login flow, you're already using OIDC effectively through Firebase Auth. This is fine for individual users and small teams.
+
+SAML is what enterprises actually require. It's older, XML-based, but every enterprise IT department runs it — Okta, Azure AD, Google Workspace, OneLogin all speak SAML. When a company says "we need SSO," they mean SAML 99% of the time. Without SAML support, no enterprise IT admin will approve your app for company-wide deployment.
+
+My recommendation for your stage:
+
+Keep Firebase Auth + Google OIDC for now (individuals and small teams)
+Add SAML when your first enterprise prospect asks for it — not before. Use a library like passport-saml on your Node backend. Don't build it from scratch.
+The sequence: OIDC now → SAML when first enterprise deal requires it
+The AI/LLM question — Gemini vs alternatives
+Gemini will work fine for drafting. The honest truth is the LLM itself is not your differentiator — the context you feed it is. Here's the real breakdown:
+
+For your draft screen specifically, the Wispr Flow model is exactly right. Wispr Flow works because it captures context (what app you're in, what the conversation is) and uses that to generate relevant responses. You already have this advantage — you have the original message, the platform, the sender, the thread history.
+
+The models ranked for your use case:
+
+GPT-4o mini — best price/quality ratio for drafting. $0.15/1M input tokens. Fast, excellent at tone matching, handles all languages well. This is what I'd use.
+
+Gemini 1.5 Flash — what you have now. Free tier is genuinely good for prototyping. The quality gap vs GPT-4o mini is real but not massive for short drafts. The problem is Google's rate limits on free tier will hurt you at scale.
+
+Claude Haiku 3.5 — Anthropic's fast/cheap model. Arguably the best at matching writing style and tone. Slightly more expensive than GPT-4o mini but the output quality for communication drafting is noticeably better.
+
+My honest recommendation:
+
+For MVP/small org: keep Gemini 1.5 Flash, it's free and good enough
+For production: switch to GPT-4o mini as primary, Claude Haiku as fallback for tone-sensitive drafts
+The real investment isn't the model — it's your prompt engineering and context pipeline
+The Wispr Flow model you should build:
+
+[Original message/thread] + [Platform context] + [User's past writing style] + [Tone preference] → Draft
+The "user's past writing style" part is what makes it feel personal. Store 20-30 examples of how the user writes on each platform, feed them as few-shot examples. That's the actual magic — not which LLM you pick.
+
+React Native Expo vs Native — the real answer
+This is the most important technical decision you're asking about, so I'll be direct.
+
+For your specific product, Expo/React Native is the right call right now. Here's why:
+
+The call-style alert feature — your killer feature — you've already solved the hard part. You have a Kotlin native module (FullScreenAlertModule.kt) bridged to React Native. That's the correct hybrid approach. You get native performance where it matters (the alert) and cross-platform speed everywhere else.
+
+Full native (Swift/Kotlin) would give you:
+
+Better performance (meaningful only for animation-heavy or compute-heavy apps)
+Full access to every platform API without bridges
+Better app store optimization in some cases
+But the cost is brutal:
+
+Two completely separate codebases
+2x the development time for every feature
+You'd need an iOS developer AND an Android developer, or twice the time as a solo/small team
+For a B2B productivity app, users don't care if scroll animations are 60fps vs 120fps
+The products that need full native: games, camera apps, AR/VR, apps doing heavy real-time graphics.
+
+The products that don't: Slack, Notion, Linear, Figma mobile — all React Native or Flutter. Shopify's entire mobile suite is React Native. Discord was React Native for years.
+
+One real concern with your current setup: you're on Expo managed workflow with a custom native module. That's a tension point. The FullScreenAlertModule.kt means you're already in bare workflow territory. Make sure your expo prebuild is clean and you're not fighting Expo's managed layer for native features. If you keep adding native modules, consider fully committing to bare workflow — it gives you all of Expo's tooling without the managed constraints.
+
+My recommendation: Stay on React Native + Expo bare workflow. Add native modules only where the feature genuinely requires it (call-style alerts, background processing). Don't rewrite in native — that's 6-12 months of work that doesn't move your product forward.
+
+The improvement roadmap — one by one, in priority order
+Given your goal (small org → feedback → scale), here's the exact sequence I'd follow:
+
+1. Alert Rules Engine (build this first, nothing else matters without it) Simple IF/THEN: sender filter, keyword filter, time window, platform filter. This is what turns "another notification app" into a product people pay for.
+
+2. Reply from Alert Screen The full loop: receive call-style alert → read message → tap "AI Draft" → edit → send. Right now you can draft but not send. Closing this loop is the "holy shit" moment for any demo.
+
+3. Switch AI to GPT-4o mini with style learning Store user writing samples per platform. Feed as few-shot context. The draft quality jump will be immediately noticeable.
+
+4. Web dashboard (management only) Not Zapier. Just: manage alert rules, see alert history, configure integrations, manage team members. Next.js, you already have the website folder. This is what enterprise buyers need to see.
+
+5. Team escalation Alert → unacknowledged for N minutes → escalate to manager. This is the PagerDuty feature that justifies $20-40/user/month pricing.
+
+6. SAML SSO Only when your first enterprise prospect asks. Not before.
+
+Start with #1. Everything else depends on it.
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Development build — requires Metro bundler running (npx expo start). The QR code connects the app to your local Metro server. This is why it needs the scan. Only for you and your team during active development. Nobody else can use it unless they're on your network with Metro running.
+
+Preview build — completely standalone APK. No Metro, no QR scan, no expo start needed. You share the APK file directly or via a link and anyone can install it like a normal app. This is what you use for sharing with testers. Build it with:
+
+cd mobile
+eas build --profile preview --platform android
+Production build — same as preview but optimized and signed for Play Store submission.
+
+So your flow should be:
+
+Day to day coding → development build + Metro
+Sharing with testers / users → preview build, share the APK link EAS gives you
+Play Store → production build
+The preview build also gets OTA updates via eas update --branch preview so once a tester installs it, you can push JS changes to them without them reinstalling.
+
+One thing to check — open your 
+eas.json
+ and make sure your preview profile has "distribution": "internal" set, which enables direct APK download links.
+
+Read file(s)
+
+eas.json
+You're already set up correctly. Preview has "distribution": "internal" and no "developmentClient": true — meaning it builds a standalone APK with no Metro dependency.
+
+When you run eas build --profile preview --platform android, EAS gives you a download link and QR code that installs the full standalone APK directly. Anyone can scan that and install it — no expo start, no Metro, nothing. Just a normal app.
