@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  DOCKERHUB_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/storlogix
+  DOCKERHUB_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/automate
 
 jobs:
   # ── Build & Lint ─────────────────────────────────────────────────────────────

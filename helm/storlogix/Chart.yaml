@@ -1,6 +1,6 @@
 apiVersion: v2
-name: storlogix
-description: Storlogix Next.js application Helm chart
+name: automate
+description: Automate - Cloud Inventory Management Helm chart
 type: application
 version: 0.1.0
 appVersion: "1.0.0"

@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "project" {
   description = "Project name for resource tagging"
   type        = string
-  default     = "storlogix"
+  default     = "automate"
 }
 
 variable "ami_id" {

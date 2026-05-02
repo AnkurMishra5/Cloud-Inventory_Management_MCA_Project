@@ -1,13 +1,13 @@
 ---
-# Deploy Storlogix via Helm on the master node
-- name: Deploy Storlogix
+# Deploy Automate app via Helm on the master node
+- name: Deploy Automate
   hosts: master
   become: false
 
   vars:
-    helm_release: storlogix
-    helm_namespace: storlogix
-    docker_image: "{{ dockerhub_username }}/storlogix"
+    helm_release: automate
+    helm_namespace: automate
+    docker_image: "{{ dockerhub_username }}/automate"
     image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest') }}"
 
   tasks:
@@ -25,7 +25,7 @@
 
     - name: Deploy via Helm
       ansible.builtin.command: >
-        helm upgrade --install {{ helm_release }} /home/ubuntu/helm/storlogix
+        helm upgrade --install {{ helm_release }} /home/ubuntu/helm/automate
         --namespace {{ helm_namespace }}
         --set image.repository={{ docker_image }}
         --set image.tag={{ image_tag }}

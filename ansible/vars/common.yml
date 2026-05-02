@@ -1,4 +1,4 @@
 ---
 dockerhub_username: "your-dockerhub-username"   # replace with yours
 image_tag: "latest"
-helm_namespace: "storlogix"
+helm_namespace: "automate"
